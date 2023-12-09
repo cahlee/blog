@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cahlee.io - new Post</title>
+    <link rel="stylesheet" href="/style/post.css">
+    <!-- Editor's Style -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js" defer></script>
+    <script src="/script/post.js" defer></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>cahlee.io</h1>
+            <ul>
+                <li>
+                    <a href="#">About</a>
+                </li>
+                <li>
+                    <a href="#">Posts</a>
+                </li>
+                <li>
+                    <a href="#">Projects</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <section class="editor__form">
+        <div class="editor__title">
+            <label for="title">제목</label>
+            <input type="text" name="title">
+        </div>
+        <div class="editor__author">
+            <label for="author">작성자</label>
+            <input type="text" name="author">
+        </div>
+        <div class="editor__contents">
+            <label for="editor">내용</label>
+            <div id="editor" name="editor"></div>
+        </div>
+        <div>
+            <button class="editor__cancel">취소</button>
+            <button class="editor__submit">등록</button>
+        </div>
+    </section>
+    <footer>
+        cahlee 2023
+    </footer>
+</body>
+</html>
