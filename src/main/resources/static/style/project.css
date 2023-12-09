@@ -14,16 +14,18 @@ h1 {
     font-size: 1rem;
 }
 
-.post {
+.projects {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+}
+
+.project {
     border: solid 1px black;
+    width: 300px;
     margin: 10px;
     padding: 10px;
 }
 
-.post__author {
-    text-align: right;
-}
-
-.post__created {
-    text-align: right;
+.project__tag {
+	display: flex;
 }

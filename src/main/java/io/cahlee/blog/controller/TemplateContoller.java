@@ -18,8 +18,23 @@ public class TemplateContoller {
 		return "main";
 	}
 	
+	@GetMapping("/about")
+	public String aboutPage() {
+		return "about";
+	}
+	
+	@GetMapping("/post/list")
+	public String postListPage() {
+		return "post/list";
+	}
+	
 	@GetMapping("/post/new")
 	public String postNewPage() {
-		return "postForm";
+		return "post/new";
+	}
+	
+	@GetMapping("/project/list")
+	public String projectListPage() {
+		return "project/list";
 	}
 }
