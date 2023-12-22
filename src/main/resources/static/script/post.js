@@ -32,3 +32,29 @@ submit.addEventListener("click", () => {
     }
   });
 });
+
+const update = document.querySelector(".editor__update");
+submit.addEventListener("click", () => {
+  // validation
+
+  // submit
+  const url = "http://localhost:8080/api/posts";
+  const params = {
+    title: document.getElementsByName("title")[0].value,
+    author: document.getElementsByName("author")[0].value,
+    contents: editor.getHTML(),
+  };
+
+  fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params),
+  }).then((response) => {
+    if (response.ok) {
+      alert("수정이 완료되었습니다");
+      window.location.href = "/";
+    }
+  });
+});

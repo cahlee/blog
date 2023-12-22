@@ -27,3 +27,7 @@ h1 {
 .post__created {
     text-align: right;
 }
+
+.toastui-editor-contents .toastui-editor-ww-code-block:after {
+	content: none;
+}
