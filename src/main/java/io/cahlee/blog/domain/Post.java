@@ -11,6 +11,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +24,9 @@ public class Post {
 	private Long id;
 	
 	private String title;
-	private String author;
+	
+	@ManyToOne
+	private Category category;
 	
 	@CreationTimestamp
 	private Date createdDate;
@@ -39,7 +42,6 @@ public class Post {
 		
 		post.setId(postDto.getId());
 		post.setTitle(postDto.getTitle());
-		post.setAuthor(postDto.getAuthor());
 		post.setContents(postDto.getContents());
 		post.setCreatedDate(postDto.getCreatedDate());
 		post.setUpdatedDate(postDto.getUpdatedDate());
@@ -52,7 +54,6 @@ public class Post {
 		
 		postDto.setId(post.getId());
 		postDto.setTitle(post.getTitle());
-		postDto.setAuthor(post.getAuthor());
 		postDto.setContents(post.getContents());
 		postDto.setCreatedDate(post.getCreatedDate());
 		postDto.setUpdatedDate(post.getUpdatedDate());
@@ -68,7 +69,6 @@ public class Post {
 			
 			postDto.setId(post.getId());
 			postDto.setTitle(post.getTitle());
-			postDto.setAuthor(post.getAuthor());
 			postDto.setContents(post.getContents());
 			postDto.setCreatedDate(post.getCreatedDate());
 			postDto.setUpdatedDate(post.getUpdatedDate());

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,9 +53,19 @@ public class PostController {
 	@PostMapping("/posts")
 	ResponseEntity<PostDto> addPost(@RequestBody PostDto postDto) {
 		Post post = Post.map(postDto);
+		
 		PostDto result = Post.map(postService.save(post));
 		
 		HttpHeaders responseHeaders = new HttpHeaders();
 		return new ResponseEntity<>(result, responseHeaders, HttpStatus.CREATED);
+	}
+	
+	@PutMapping("/posts")
+	ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto) {
+		Post post = Post.map(postDto);
+		PostDto result = Post.map(postService.save(post));
+		
+		HttpHeaders responseHeaders = new HttpHeaders();
+		return new ResponseEntity<>(result, responseHeaders, HttpStatus.OK);
 	}
 }
