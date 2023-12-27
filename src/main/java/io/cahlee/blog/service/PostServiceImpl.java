@@ -30,4 +30,14 @@ public class PostServiceImpl implements PostService {
 		return postRepository.findAll();
 	}
 
+	@Override
+	public List<Post> findPosts(String userId) {
+		return postRepository.findByAuthorId(userId);
+	}
+
+	@Override
+	public void deletePost(Post post) {
+		postRepository.delete(post);
+	}
+
 }

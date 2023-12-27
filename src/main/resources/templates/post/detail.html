@@ -30,7 +30,7 @@
     <section>
 		<article class="post">
 			<h1 th:text="${post.title}"></h1>
-			<h5 class="post__author">by <span th:text="${post.author}"></span></h5>
+			<h5 class="post__author">by <span th:text="${post.author.id}"></span></h5>
 	        <h6 class="post__created" th:text="${post.createdDate}"></h6>
 	        <div id="viewer" name="viewer" class="toastui-editor-contents" th:utext="${post.contents}"></div>
 	        <input type="hidden" id="postId" th:value="${post.id}">

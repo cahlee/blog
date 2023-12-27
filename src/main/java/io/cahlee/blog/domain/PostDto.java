@@ -11,6 +11,7 @@ public class PostDto {
 	private Long id;
 	private String title;
 	private String author;
+	private Long category;
 	private Date createdDate;
 	private Date updatedDate;
 	private String contents;

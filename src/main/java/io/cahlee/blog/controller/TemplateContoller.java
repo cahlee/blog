@@ -16,7 +16,7 @@ public class TemplateContoller {
 	
 	@GetMapping("/")
 	public String mainPage(Model model) {
-		model.addAttribute("posts", postService.findAllPosts());
+		model.addAttribute("posts", postService.findPosts("cahlee"));
 		return "main";
 	}
 	
@@ -27,7 +27,7 @@ public class TemplateContoller {
 	
 	@GetMapping("/post/list")
 	public String postListPage(Model model) {
-		model.addAttribute("posts", postService.findAllPosts());
+		model.addAttribute("posts", postService.findPosts("cahlee"));
 		return "post/list";
 	}
 	

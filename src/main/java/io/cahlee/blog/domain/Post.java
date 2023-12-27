@@ -26,6 +26,9 @@ public class Post {
 	private String title;
 	
 	@ManyToOne
+	private User author;
+	
+	@ManyToOne
 	private Category category;
 	
 	@CreationTimestamp
@@ -41,10 +44,13 @@ public class Post {
 		Post post = new Post();
 		
 		post.setId(postDto.getId());
+		
+		User user = new User();
+		user.setId(postDto.getAuthor());
+		post.setAuthor(user);
+		
 		post.setTitle(postDto.getTitle());
 		post.setContents(postDto.getContents());
-		post.setCreatedDate(postDto.getCreatedDate());
-		post.setUpdatedDate(postDto.getUpdatedDate());
 		
 		return post;
 	}
@@ -53,6 +59,7 @@ public class Post {
 		PostDto postDto = new PostDto();
 		
 		postDto.setId(post.getId());
+		postDto.setAuthor(post.getAuthor().getId());
 		postDto.setTitle(post.getTitle());
 		postDto.setContents(post.getContents());
 		postDto.setCreatedDate(post.getCreatedDate());
@@ -68,6 +75,7 @@ public class Post {
 			PostDto postDto = new PostDto();
 			
 			postDto.setId(post.getId());
+			postDto.setAuthor(post.getAuthor().getId());
 			postDto.setTitle(post.getTitle());
 			postDto.setContents(post.getContents());
 			postDto.setCreatedDate(post.getCreatedDate());

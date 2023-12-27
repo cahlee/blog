@@ -25,9 +25,10 @@
         </nav>
     </header>
     <section>
+		<button onclick="location.href='/post/new'">신규</button>
 		<article th:each="post : ${posts}" class="post">
 			<h1><a th:href="@{/post/{postId}(postId=${post.id})}" th:text="${post.title}"></a></h1>
-			<h5 class="post__author">by <span th:text="${post.author}"></span></h5>
+			<h5 class="post__author">by <span th:text="${post.author.id}"></span></h5>
             <h6 class="post__created" th:text="${post.createdDate}"></h6>
             <div class="post__contents" th:utext="${post.contents}">
 			</div>

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js" defer></script>
     <script src="https://kit.fontawesome.com/ea624d8d08.js" crossorigin="anonymous"></script>
-    <script src="/script/post.js" defer></script>
+    <script src="/script/update.js" defer></script>
 </head>
 <body>
     <header>
@@ -29,13 +29,14 @@
         </nav>
     </header>
     <section class="editor__form">
+		<input type="hidden" name="id" th:value="${post.id}">
         <div class="editor__title">
             <label for="title">제목</label>
             <input type="text" name="title" th:value="${post.title}">
         </div>
         <div class="editor__author">
             <label for="author">작성자</label>
-            <input type="text" name="author" th:value="${post.author}">
+            <input type="text" name="author" th:value="${post.author.id}">
         </div>
         <div class="editor__contents">
             <label for="editor">내용</label>

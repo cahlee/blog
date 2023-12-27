@@ -7,27 +7,28 @@ const editor = new Editor({
   previewStyle: "vertical",
 });
 
-const submit = document.querySelector(".editor__submit");
-submit.addEventListener("click", () => {
+const update = document.querySelector(".editor__update");
+update.addEventListener("click", () => {
   // validation
 
   // submit
   const url = "http://localhost:8080/api/posts";
   const params = {
+    id: document.getElementsByName("id")[0].value,
     title: document.getElementsByName("title")[0].value,
     author: document.getElementsByName("author")[0].value,
     contents: editor.getHTML(),
   };
 
   fetch(url, {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(params),
   }).then((response) => {
     if (response.ok) {
-      alert("등록이 완료되었습니다");
+      alert("수정이 완료되었습니다");
       window.location.href = "/";
     }
   });
@@ -35,5 +36,5 @@ submit.addEventListener("click", () => {
 
 const cancel = document.querySelector(".editor__cancel");
 cancel.addEventListener("click", () => {
-	window.location.href = "/post/list";
+	history.back();
 });
