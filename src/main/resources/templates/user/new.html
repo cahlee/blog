@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cahlee.io - new Post</title>
+    <title>cahlee.io - new User</title>
     <link rel="stylesheet" href="/style/post.css">
     <!-- Editor's Style -->
     <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js" defer></script>
     <script src="https://kit.fontawesome.com/ea624d8d08.js" crossorigin="anonymous"></script>
-    <script src="/script/post.js" defer></script>
+    <script src="/script/user.js" defer></script>
 </head>
 <body>
     <header>
@@ -28,22 +28,27 @@
             </ul>
         </nav>
     </header>
-    <section class="editor__form">
-        <div class="editor__title">
-            <label for="title">제목</label>
-            <input type="text" name="title">
-        </div>
-        <div class="editor__author">
-            <label for="author">작성자</label>
-            <input type="text" name="author" d>
-        </div>
-        <div class="editor__contents">
-            <label for="editor">내용</label>
-            <div id="editor" name="editor"></div>
-        </div>
+    <section class="user__form">
+	        <div class="user__id">
+	            <label for="id">아이디</label>
+	            <input type="text" name="id">
+	        </div>
+	        <div class="user__name">
+	            <label for="name">이름</label>
+	            <input type="text" name="name">
+	        </div>
+	        <div class="editor__password">
+	            <label for="password">패스워드</label>
+	            <input type="password" name="password">
+	        </div>
+	        <div class="editor__password_confirm">
+	            <label for="password_confirm">패스워드 확인</label>
+	            <input type="password" name="password_confirm">
+	        </div>
+	    </form>
         <div>
-            <button class="editor__cancel">취소</button>
-            <button class="editor__submit">등록</button>
+            <button class="user__cancel">취소</button>
+            <button class="user__submit">등록</button>
         </div>
     </section>
     <footer>

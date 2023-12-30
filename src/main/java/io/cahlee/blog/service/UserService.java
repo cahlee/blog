@@ -8,4 +8,6 @@ public interface UserService {
 
 	void save(User user);
 
+	void register(User user);
+
 }

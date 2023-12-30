@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import io.cahlee.blog.repository.UserRepository;
@@ -23,9 +25,10 @@ public class SecurityConfig {
         .authorizeHttpRequests((authorize) -> authorize
             .requestMatchers("/post/new").authenticated()
             .requestMatchers("/post/update").authenticated()
-            .requestMatchers("/api/**").authenticated()
+            .requestMatchers("/api/posts/**").authenticated()
             .anyRequest().permitAll()
         )
+		.csrf((csrf) -> csrf.disable())
         .httpBasic(Customizer.withDefaults())
 		.formLogin(Customizer.withDefaults());
         return http.build();
@@ -50,6 +53,11 @@ public class SecurityConfig {
 			
 			
 		};
+	}
+	
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
 }

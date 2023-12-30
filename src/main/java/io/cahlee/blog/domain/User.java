@@ -29,4 +29,13 @@ public class User {
 	
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
 	private List<Category> categories = new ArrayList<>();
+
+	public static User map(UserDto userDto) {
+		User user = new User();
+		user.setId(userDto.getId());
+		user.setName(userDto.getName());
+		user.setPassword(userDto.getPassword());
+		return user;
+	}
+
 }

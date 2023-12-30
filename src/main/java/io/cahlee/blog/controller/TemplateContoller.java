@@ -52,4 +52,9 @@ public class TemplateContoller {
 	public String projectListPage() {
 		return "project/list";
 	}
+	
+	@GetMapping("/user/new")
+	public String userNewPage() {
+		return "user/new";
+	}
 }
