@@ -1,0 +1,183 @@
+/* Custom styles for MyBlog */
+
+/* General */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+/* Post content rendered from Markdown */
+.post-content {
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.post-content h1 { font-size: 2rem; border-bottom: 2px solid #dee2e6; padding-bottom: 0.5rem; }
+.post-content h2 { font-size: 1.6rem; border-bottom: 1px solid #dee2e6; padding-bottom: 0.4rem; }
+.post-content h3 { font-size: 1.3rem; }
+
+.post-content p {
+    margin-bottom: 1.2rem;
+}
+
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    margin: 1rem 0;
+}
+
+.post-content pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    margin: 1.2rem 0;
+}
+
+.post-content code {
+    background-color: #f0f0f0;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #e83e8c;
+}
+
+.post-content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+}
+
+.post-content blockquote {
+    border-left: 4px solid #0d6efd;
+    padding: 0.5rem 1rem;
+    margin: 1.2rem 0;
+    background-color: #f0f4ff;
+    border-radius: 0 6px 6px 0;
+    color: #495057;
+}
+
+.post-content ul,
+.post-content ol {
+    padding-left: 1.8rem;
+    margin-bottom: 1.2rem;
+}
+
+.post-content li {
+    margin-bottom: 0.3rem;
+}
+
+.post-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.2rem 0;
+    font-size: 0.95rem;
+}
+
+.post-content table th,
+.post-content table td {
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.post-content table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.post-content table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.post-content a {
+    color: #0d6efd;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.post-content hr {
+    border-color: #dee2e6;
+    margin: 2rem 0;
+}
+
+/* Post card styles */
+.post-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: 1px solid #e9ecef;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+}
+
+.post-title:hover {
+    color: #0d6efd !important;
+}
+
+/* Navbar active link */
+.navbar .nav-link.active {
+    color: #fff !important;
+    font-weight: 600;
+}
+
+/* Toast UI Editor wrapper */
+#editor {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* Auth pages */
+.login-card,
+.register-card {
+    width: 100%;
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: #0d6efd;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Badge tags */
+.badge.bg-light {
+    color: #495057 !important;
+    border: 1px solid #dee2e6;
+}
+
+/* Sidebar card */
+.card {
+    border-radius: 8px;
+}
+
+/* Comment section */
+#comments .card {
+    border-radius: 6px;
+}
+
+/* Footer */
+footer {
+    border-top: 1px solid #343a40;
+}
