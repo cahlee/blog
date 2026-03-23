@@ -25,6 +25,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 로컬 개발 환경: 업로드된 이미지 서빙
         String uploadPath = Paths.get(uploadDir).toAbsolutePath().toUri().toString();
+        if (!uploadPath.endsWith("/")) uploadPath += "/";
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(uploadPath);
     }
