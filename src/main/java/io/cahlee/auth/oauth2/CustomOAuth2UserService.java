@@ -52,9 +52,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (existingUserOpt.isPresent()) {
             User existingUser = existingUserOpt.get();
             if (existingUser.getProvider() != attributes.getProvider()) {
+                log.warn("OAuth2 login attempted with email already registered via provider: {}",
+                        existingUser.getProvider().name());
                 throw new OAuth2AuthenticationException(
                         new OAuth2Error("email_already_registered"),
-                        "This email is already registered with a different provider: " + existingUser.getProvider().name());
+                        "This email is already registered. Please use a different login method.");
             }
             existingUser.setUsername(attributes.getName() != null ? attributes.getName() : existingUser.getUsername());
             existingUser.setProviderId(attributes.getProviderId());

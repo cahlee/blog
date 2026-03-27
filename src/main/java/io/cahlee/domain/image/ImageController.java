@@ -13,12 +13,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/images")
 @RequiredArgsConstructor
 public class ImageController {
+
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png", ".gif", ".webp");
+    private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
+            "image/jpeg", "image/png", "image/gif", "image/webp");
 
     private final StorageService storageService;
     private final PostImageRepository postImageRepository;
@@ -31,8 +36,16 @@ public class ImageController {
         }
 
         String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Only image files are allowed"));
+        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType.toLowerCase())) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Only image files are allowed (jpg, png, gif, webp)"));
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null) {
+            String ext = originalFilename.substring(originalFilename.lastIndexOf('.')).toLowerCase();
+            if (!ALLOWED_EXTENSIONS.contains(ext)) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Only image files are allowed (jpg, png, gif, webp)"));
+            }
         }
 
         try {

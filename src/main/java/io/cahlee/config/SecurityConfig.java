@@ -1,10 +1,13 @@
 package io.cahlee.config;
 
 import io.cahlee.auth.CustomUserDetailsService;
+import io.cahlee.auth.jwt.JwtAuthenticationFilter;
+import io.cahlee.auth.jwt.JwtTokenProvider;
 import io.cahlee.auth.oauth2.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,13 +16,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -30,6 +33,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -49,31 +53,52 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * API 전용 보안 체인 (Order 1)
+     * - /api/** 요청만 처리
+     * - JWT 기반 무상태(stateless) 인증
+     * - CSRF 비활성화 (Bearer 토큰 방식이므로 불필요)
+     */
     @Bean
-    public AuthenticationFailureHandler oAuth2FailureHandler() {
-        return new SimpleUrlAuthenticationFailureHandler("/login?error=oauth2");
+    @Order(1)
+    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService);
+
+        http
+            .securityMatcher("/api/**")
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+            )
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 
+    /**
+     * 웹(Thymeleaf) 보안 체인 (Order 2)
+     * - 세션 기반 인증 + CSRF 보호
+     * - 폼 로그인 + OAuth2 로그인
+     */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Order(2)
+    public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
                 .requestMatchers("/auth/**", "/login", "/oauth2/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**").permitAll()
-                .requestMatchers("/api/**").authenticated()
                 .requestMatchers("/profile/**").authenticated()
                 .requestMatchers("/categories/**").authenticated()
                 .requestMatchers("/posts/new").authenticated()
                 .requestMatchers(HttpMethod.GET, "/**").permitAll()
                 .anyRequest().authenticated()
-            )
-            .exceptionHandling(ex -> ex
-                .defaultAuthenticationEntryPointFor(
-                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
-                    new AntPathRequestMatcher("/api/**")
-                )
             )
             .formLogin(form -> form
                 .loginPage("/auth/login")
@@ -88,7 +113,7 @@ public class SecurityConfig {
                     .userService(customOAuth2UserService)
                 )
                 .defaultSuccessUrl("/", false)
-                .failureHandler(oAuth2FailureHandler())
+                .failureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error=oauth2"))
             )
             .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
@@ -98,7 +123,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/**", "/h2-console/**")
+                .ignoringRequestMatchers("/h2-console/**")
             )
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())

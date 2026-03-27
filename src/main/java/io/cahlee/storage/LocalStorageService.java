@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@Profile("local")
+@Profile("!prod")
 public class LocalStorageService implements StorageService {
 
     @Value("${storage.local.upload-dir:./uploads}")
@@ -51,7 +51,13 @@ public class LocalStorageService implements StorageService {
             String prefix = baseUrl + "/images/";
             if (storedUrl.startsWith(prefix)) {
                 String fileName = storedUrl.substring(prefix.length());
-                Path filePath = Paths.get(uploadDir, "images", fileName);
+                Path uploadBase = Paths.get(uploadDir, "images").toAbsolutePath().normalize();
+                Path filePath = uploadBase.resolve(fileName).normalize();
+                // 경로 탐색 공격 방지: 파일 경로가 업로드 디렉토리 내에 있는지 확인
+                if (!filePath.startsWith(uploadBase)) {
+                    log.warn("Attempted path traversal in deleteFile: {}", storedUrl);
+                    return;
+                }
                 Files.deleteIfExists(filePath);
                 log.info("Local file deleted: {}", filePath);
             }

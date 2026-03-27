@@ -39,6 +39,9 @@ public class PostService {
         this.tagService = tagService;
 
         MutableDataSet options = new MutableDataSet();
+        // 마크다운 내 raw HTML 태그 허용 금지 (XSS 방지)
+        options.set(Parser.HTML_BLOCK_PARSER, false);
+        options.set(HtmlRenderer.SUPPRESS_HTML, true);
         this.markdownParser = Parser.builder(options).build();
         this.htmlRenderer = HtmlRenderer.builder(options).build();
     }
@@ -127,6 +130,9 @@ public class PostService {
     public Page<PostResponse> search(String keyword, Pageable pageable) {
         if (keyword == null || keyword.isBlank()) {
             return findPublicPosts(pageable);
+        }
+        if (keyword.length() > 200) {
+            keyword = keyword.substring(0, 200);
         }
 
         // MySQL FULLTEXT 우선, 실패 시 LIKE 검색으로 폴백 (H2, FULLTEXT 인덱스 미설치 환경 대응)

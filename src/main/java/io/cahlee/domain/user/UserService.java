@@ -15,7 +15,7 @@ public class UserService {
     @Transactional
     public User register(String email, String username, String rawPassword) {
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already in use: " + email);
+            throw new IllegalArgumentException("Registration failed. Please check your details.");
         }
 
         User user = User.builder()

@@ -19,3 +19,12 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: strict
+
+jwt:
+  secret: ${JWT_SECRET:local-dev-secret-key-please-change-in-prod-min-32chars}
+  expiration-ms: 86400000
