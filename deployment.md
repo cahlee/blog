@@ -439,3 +439,219 @@ gcloud compute ssl-certificates describe blog-ssl-cert \
 ```bash
 mysql -h [CLOUD_SQL_PRIVATE_IP] -u bloguser -p blog
 ```
+
+---
+
+## 홈서버 배포 (OpenStack, homeserver 프로필)
+
+> Ubuntu 단일 인스턴스 + 블록스토리지 마운트 환경. GCP 없이 MySQL + 로컬 파일 저장소 사용.
+> OAuth2(Google/GitHub) 로그인은 도메인 연결 후 추가 예정. 현재는 폼 로그인만 사용.
+
+---
+
+### 1단계. MySQL 초기 설정
+
+```bash
+# MySQL 접속 (root)
+sudo mysql
+```
+
+```sql
+-- DB 생성
+CREATE DATABASE blog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 전용 계정 생성 및 권한 부여
+CREATE USER 'bloguser'@'localhost' IDENTIFIED BY '[비밀번호]';
+GRANT ALL PRIVILEGES ON blog.* TO 'bloguser'@'localhost';
+FLUSH PRIVILEGES;
+
+EXIT;
+```
+
+```bash
+# 연결 확인
+mysql -u bloguser -p blog
+```
+
+> MySQL이 동일 인스턴스에 있는 경우 `DB_HOST=127.0.0.1`을 사용합니다.
+> `localhost`는 소켓 연결을 시도하므로 JDBC에서는 `127.0.0.1` 권장.
+
+---
+
+### 2단계. 디렉토리 및 블록스토리지 준비
+
+```bash
+# 블록스토리지 마운트 확인 (예: /mnt/data)
+df -h
+
+# 업로드 디렉토리 생성 (블록스토리지 경로에)
+mkdir -p /opt/blog/uploads
+
+# 앱 디렉토리 생성
+sudo mkdir -p /opt/blog
+sudo chown $USER:$USER /opt/blog
+```
+
+---
+
+### 3단계. JAR 빌드 및 업로드
+
+```bash
+# 로컬에서 빌드
+./mvnw package -DskipTests
+
+# 서버로 전송
+scp target/blog-0.0.1-SNAPSHOT.jar ubuntu@192.168.0.229:/opt/blog/blog.jar
+```
+
+---
+
+### 4단계. 환경변수 파일 생성
+
+```bash
+sudo nano /opt/blog/.env
+```
+
+```ini
+SPRING_PROFILES_ACTIVE=homeserver
+
+# DB 연결 정보
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=blog
+DB_USERNAME=bloguser
+DB_PASSWORD=[설정한 비밀번호]
+
+# 파일 저장소
+UPLOAD_DIR=/opt/blog/uploads
+UPLOAD_BASE_URL=http://ctrl0703.iptime.org:8081/uploads
+
+# 보안
+JWT_SECRET=[32자 이상 랜덤 문자열]
+```
+
+```bash
+chmod 600 /opt/blog/.env
+```
+
+> JWT_SECRET 생성 예시: `openssl rand -base64 32`
+
+---
+
+### 5단계. systemd 서비스 등록
+
+```bash
+sudo nano /etc/systemd/system/blog.service
+```
+
+```ini
+[Unit]
+Description=Blog Spring Boot App
+After=network.target
+
+[Service]
+User=ubuntu
+EnvironmentFile=/opt/blog/.env
+ExecStart=/usr/bin/java -jar /opt/blog/blog.jar
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable blog
+sudo systemctl start blog
+
+# 기동 확인
+sudo systemctl status blog
+sudo journalctl -u blog -f
+```
+
+---
+
+### 6단계. nginx 리버스 프록시 설정
+
+```bash
+sudo apt update && sudo apt install -y nginx
+```
+
+```bash
+sudo nano /etc/nginx/sites-available/blog
+```
+
+```nginx
+server {
+    listen 80;
+    server_name 192.168.0.229;  # 도메인 연결 시 도메인으로 교체
+
+    # 업로드 파일 직접 서빙 (Spring Boot를 거치지 않아 효율적)
+    location /uploads/ {
+        alias /opt/blog/uploads/;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash
+# 설정 활성화
+sudo ln -s /etc/nginx/sites-available/blog /etc/nginx/sites-enabled/
+sudo nginx -t          # 설정 문법 확인
+sudo systemctl enable nginx
+sudo systemctl restart nginx
+```
+
+```bash
+# 방화벽 설정
+sudo ufw allow 80/tcp
+sudo ufw allow 22/tcp  # SSH 차단 방지
+sudo ufw enable
+sudo ufw status
+```
+
+> nginx가 80포트를 받아 Spring Boot(8080)로 전달합니다.
+> Spring Boot 8080은 외부에 직접 노출하지 않아도 됩니다.
+
+---
+
+### 업데이트 배포
+
+```bash
+# 1. 로컬에서 빌드
+./mvnw package -DskipTests
+
+# 2. 서버로 전송
+scp target/blog-0.0.1-SNAPSHOT.jar ubuntu@192.168.0.229:/opt/blog/blog.jar
+
+# 3. 서비스 재시작
+ssh ubuntu@192.168.0.229 "sudo systemctl restart blog"
+
+# 4. 로그 확인
+ssh ubuntu@192.168.0.229 "sudo journalctl -u blog -n 50"
+```
+
+---
+
+### 트러블슈팅
+
+```bash
+# 앱 로그
+sudo journalctl -u blog -f
+
+# nginx 로그
+sudo tail -f /var/log/nginx/error.log
+
+# DB 연결 확인
+mysql -u bloguser -p blog -h 127.0.0.1
+```
